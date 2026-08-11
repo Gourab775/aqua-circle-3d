@@ -1,0 +1,19 @@
+{
+  "name": "vary-circle-of-water-3d-websit",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.183.2",
+    "stats-gl": "^4.0.2",
+    "eases-jsnext": "^1.0.10"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}
