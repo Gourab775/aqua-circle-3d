@@ -2,6 +2,7 @@
   "name": "vary-circle-of-water-3d-websit",
   "private": true,
   "version": "1.0.0",
+  "description": "Vary Circle of Water — immersive 3D web experience with real-time water caustics, Three.js shaders, and editorial scroll narrative. Built with Vite and vanilla ES modules.",
   "type": "module",
   "scripts": {
     "dev": "vite",
