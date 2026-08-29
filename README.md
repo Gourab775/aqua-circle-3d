@@ -1,6 +1,6 @@
 # Vary — Circle of Water 3D Experience
 
-Live Demo: https://gourab775.github.io/vary-circle-of-water-3d-website
+Live Demo: https://vary-circle-of-water-3d-website.vercel.app
 
 Category: Creative / Interactive 3D Web Experience
 
@@ -73,7 +73,7 @@ npm run build
 
 Deploy `dist/` to any static host:
 
-- **GitHub Pages** — Configure Pages to serve `dist/` (or use `gh-pages` / Actions). Live at https://gourab775.github.io/vary-circle-of-water-3d-website
+- **GitHub Pages** — Configure Pages to serve `dist/` (or use `gh-pages` / Actions). Live at https://vary-circle-of-water-3d-website.vercel.app
 - **Vercel / Netlify / EdgeOne Pages** — Connect repo, build command `npm run build`, output `dist`
 - **S3 + CloudFront / Any CDN** — Upload `dist/` contents
 
