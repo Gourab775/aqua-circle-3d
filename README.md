@@ -1,24 +1,24 @@
-# Vary — Circle of Water 3D Experience
+﻿# Vary â€” Circle of Water 3D Experience
 
-Live Demo: https://vary-circle-of-water-3d-website.vercel.app
+Live Demo: https://aqua-circle-3d.vercel.app
 
 Category: Creative / Interactive 3D Web Experience
 
-Stack: Three.js · Vite · JavaScript (ES Modules) · GLSL (Water Caustics)
+Stack: Three.js Â· Vite Â· JavaScript (ES Modules) Â· GLSL (Water Caustics)
 
 ## Overview
 
-Vary — Circle of Water is an immersive, fashion-inspired 3D web experience that merges editorial storytelling with real-time water simulation. A full-screen WebGL canvas renders physically-inspired water caustics and a circular pool surface, while scroll-snapped editorial chapters unfold with fluid typography and motion.
+Vary â€” Circle of Water is an immersive, fashion-inspired 3D web experience that merges editorial storytelling with real-time water simulation. A full-screen WebGL canvas renders physically-inspired water caustics and a circular pool surface, while scroll-snapped editorial chapters unfold with fluid typography and motion.
 
-Built as a lightweight, framework-free Vite application, it demonstrates advanced shader work, performant scroll orchestration, and a polished responsive layout — ideal as a luxury campaign microsite, lookbook, or experimental WebGL showcase.
+Built as a lightweight, framework-free Vite application, it demonstrates advanced shader work, performant scroll orchestration, and a polished responsive layout â€” ideal as a luxury campaign microsite, lookbook, or experimental WebGL showcase.
 
 ## Features
 
-- **Real-Time Water Simulation** — Custom `WaterPlane` and `WaterCaustics` shaders (Three.js) with interactive ripples, caustic projection, and depth-aware rendering
-- **Editorial Scroll Narrative** — Splash + three chapters + finale with `scroll-snap`, `IntersectionObserver` reveals, and staggered typographic animation
-- **Immersive Full-Screen Canvas** — Fixed WebGL layer under semantic HTML, with `stats-gl` instrumentation and eased camera / lighting controls
-- **Tunable Visual System** — On-canvas GUI panel (Properties) for live tweaking of water, light, and material parameters — collapsible, mobile-friendly
-- **Lightweight & Fast** — Vanilla ES modules via Vite, no framework overhead, optimized fonts (Space Grotesk, DM Sans, Inter) and asset delivery
+- **Real-Time Water Simulation** â€” Custom `WaterPlane` and `WaterCaustics` shaders (Three.js) with interactive ripples, caustic projection, and depth-aware rendering
+- **Editorial Scroll Narrative** â€” Splash + three chapters + finale with `scroll-snap`, `IntersectionObserver` reveals, and staggered typographic animation
+- **Immersive Full-Screen Canvas** â€” Fixed WebGL layer under semantic HTML, with `stats-gl` instrumentation and eased camera / lighting controls
+- **Tunable Visual System** â€” On-canvas GUI panel (Properties) for live tweaking of water, light, and material parameters â€” collapsible, mobile-friendly
+- **Lightweight & Fast** â€” Vanilla ES modules via Vite, no framework overhead, optimized fonts (Space Grotesk, DM Sans, Inter) and asset delivery
 
 ## Tech Stack
 
@@ -34,13 +34,13 @@ Built as a lightweight, framework-free Vite application, it demonstrates advance
 
 ```
 vary-circle-of-water-3d-website/
-├── index.html          # Editorial markup + styles + GUI + scroll logic
-├── scene.js            # Three.js scene, camera, renderer, water setup
-├── WaterPlane.js       # Water surface geometry & shader material
-├── WaterCaustics.js    # Caustics simulation & projection
-├── vite.config.js      # Vite configuration
-├── package.json
-└── public/ (if any)    # Static assets
+â”œâ”€â”€ index.html          # Editorial markup + styles + GUI + scroll logic
+â”œâ”€â”€ scene.js            # Three.js scene, camera, renderer, water setup
+â”œâ”€â”€ WaterPlane.js       # Water surface geometry & shader material
+â”œâ”€â”€ WaterCaustics.js    # Caustics simulation & projection
+â”œâ”€â”€ vite.config.js      # Vite configuration
+â”œâ”€â”€ package.json
+â””â”€â”€ public/ (if any)    # Static assets
 ```
 
 ## Getting Started
@@ -73,20 +73,21 @@ npm run build
 
 Deploy `dist/` to any static host:
 
-- **GitHub Pages** — Configure Pages to serve `dist/` (or use `gh-pages` / Actions). Live at https://vary-circle-of-water-3d-website.vercel.app
-- **Vercel / Netlify / EdgeOne Pages** — Connect repo, build command `npm run build`, output `dist`
-- **S3 + CloudFront / Any CDN** — Upload `dist/` contents
+- **GitHub Pages** â€” Configure Pages to serve `dist/` (or use `gh-pages` / Actions). Live at https://aqua-circle-3d.vercel.app
+- **Vercel / Netlify / EdgeOne Pages** â€” Connect repo, build command `npm run build`, output `dist`
+- **S3 + CloudFront / Any CDN** â€” Upload `dist/` contents
 
 No environment variables required.
 
 ## Customization
 
-- **Copy & Chapters** — Edit editorial text in `index.html` (`.splash`, `.sections .section`, `.finale`)
-- **Water Look** — Tune uniforms in `WaterPlane.js` / `WaterCaustics.js` and parameters wired in `scene.js` / GUI panel
-- **Scene & Camera** — Adjust renderer, camera, and animation loop in `scene.js`; lighting and fog in material setup
-- **Typography & Theme** — Update CSS variables (`--cream`, `--accent`, etc.) and Google Font imports in `<head>` of `index.html`
-- **Build** — Extend `vite.config.js` for base path, aliases, or dev server proxies
+- **Copy & Chapters** â€” Edit editorial text in `index.html` (`.splash`, `.sections .section`, `.finale`)
+- **Water Look** â€” Tune uniforms in `WaterPlane.js` / `WaterCaustics.js` and parameters wired in `scene.js` / GUI panel
+- **Scene & Camera** â€” Adjust renderer, camera, and animation loop in `scene.js`; lighting and fog in material setup
+- **Typography & Theme** â€” Update CSS variables (`--cream`, `--accent`, etc.) and Google Font imports in `<head>` of `index.html`
+- **Build** â€” Extend `vite.config.js` for base path, aliases, or dev server proxies
 
 ## License
 
-MIT — free for personal and commercial use.
+MIT â€” free for personal and commercial use.
+
