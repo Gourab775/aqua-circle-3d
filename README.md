@@ -1,4 +1,4 @@
-﻿# Vary â€” Circle of Water 3D Experience
+# Vary â€” Circle of Water 3D Experience
 
 Live Demo: https://aqua-circle-3d.vercel.app
 
