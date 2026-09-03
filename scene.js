@@ -43,7 +43,7 @@ import * as easings from 'eases-jsnext'
 // ─── Params ─────────────────────────────────────────────────────────────────
 const params = {
   // Camera
-  fov: 55,
+  fov: 52,
   cameraEase: 'quadInOut',
   cameraTransitionDuration: 2,
   blur: 0,
@@ -69,7 +69,7 @@ const params = {
   fresnelBias: 0.1,
   fresnelPower: 2.0,
   fresnelScale: 1.0,
-  floorTileSize: 0.4,
+  floorTileSize: 1,
   causticStrength: 1.8,
   causticShadowInfluence: 1.0,
   causticHeightMultiplier: 8,
@@ -801,156 +801,12 @@ const stats = new Stats({ trackGPU: true, trackCPT: true })
 document.body.appendChild(stats.dom)
 stats.init(renderer)
 
-// ─── Custom GUI ─────────────────────────────────────────────────────────────
-const guiPanel = document.getElementById('guiPanel')
-const guiPanelHeader = document.getElementById('guiPanelHeader')
-const guiPanelBody = document.getElementById('guiPanelBody')
-
-guiPanelHeader.addEventListener('click', () => {
-  guiPanel.classList.toggle('collapsed')
-})
-
-// GUI builder helpers
-function guiFolder(name) {
-  const folder = document.createElement('div')
-  folder.className = 'gui-folder closed'
-  const header = document.createElement('div')
-  header.className = 'gui-folder-header'
-  header.innerHTML = `<span class="folder-chevron">▼</span>${name}`
-  header.addEventListener('click', () => folder.classList.toggle('closed'))
-  const body = document.createElement('div')
-  body.className = 'gui-folder-body'
-  folder.appendChild(header)
-  folder.appendChild(body)
-  guiPanelBody.appendChild(folder)
-  return body
-}
-
-function guiSlider(parent, label, value, min, max, step, onChange) {
-  const row = document.createElement('div')
-  row.className = 'gui-row'
-  const lbl = document.createElement('label')
-  lbl.textContent = label
-  const ctrl = document.createElement('div')
-  ctrl.className = 'gui-control'
-  const input = document.createElement('input')
-  input.type = 'range'
-  input.min = min
-  input.max = max
-  input.step = step
-  input.value = value
-  const val = document.createElement('span')
-  val.className = 'gui-value'
-  val.textContent = Number(value).toFixed(step < 0.01 ? 4 : step < 1 ? 2 : 0)
-  input.addEventListener('input', () => {
-    const v = parseFloat(input.value)
-    val.textContent = v.toFixed(step < 0.01 ? 4 : step < 1 ? 2 : 0)
-    onChange(v)
-  })
-  ctrl.appendChild(input)
-  row.appendChild(lbl)
-  row.appendChild(ctrl)
-  row.appendChild(val)
-  parent.appendChild(row)
-  return input
-}
-
-function guiColor(parent, label, value, onChange) {
-  const row = document.createElement('div')
-  row.className = 'gui-row'
-  const lbl = document.createElement('label')
-  lbl.textContent = label
-  const ctrl = document.createElement('div')
-  ctrl.className = 'gui-control'
-  const input = document.createElement('input')
-  input.type = 'color'
-  input.value = value
-  input.addEventListener('input', () => onChange(input.value))
-  ctrl.appendChild(input)
-  row.appendChild(lbl)
-  row.appendChild(ctrl)
-  parent.appendChild(row)
-  return input
-}
-
-function guiCheckbox(parent, label, value, onChange) {
-  const row = document.createElement('div')
-  row.className = 'gui-row'
-  const lbl = document.createElement('label')
-  lbl.textContent = label
-  const ctrl = document.createElement('div')
-  ctrl.className = 'gui-control'
-  const input = document.createElement('input')
-  input.type = 'checkbox'
-  input.checked = value
-  input.addEventListener('change', () => onChange(input.checked))
-  ctrl.appendChild(input)
-  row.appendChild(lbl)
-  row.appendChild(ctrl)
-  parent.appendChild(row)
-  return input
-}
-
-function guiSelect(parent, label, options, value, onChange) {
-  const row = document.createElement('div')
-  row.className = 'gui-row'
-  const lbl = document.createElement('label')
-  lbl.textContent = label
-  const ctrl = document.createElement('div')
-  ctrl.className = 'gui-control'
-  const sel = document.createElement('select')
-  for (const opt of options) {
-    const o = document.createElement('option')
-    o.value = opt
-    o.textContent = opt
-    if (opt == value) o.selected = true
-    sel.appendChild(o)
-  }
-  sel.addEventListener('change', () => onChange(sel.value))
-  ctrl.appendChild(sel)
-  row.appendChild(lbl)
-  row.appendChild(ctrl)
-  parent.appendChild(row)
-  return sel
-}
-
-// ── Camera folder
-const cameraF = guiFolder('Camera')
-guiSlider(cameraF, 'FOV', params.fov, 20, 120, 1, (v) => { params.fov = v; camera.fov = v; camera.updateProjectionMatrix() })
-guiSelect(cameraF, 'Easing', Object.keys(easings).filter((k) => typeof easings[k] === 'function'), params.cameraEase, (v) => { params.cameraEase = v })
-guiSlider(cameraF, 'Duration', params.cameraTransitionDuration, 0.5, 6, 0.1, (v) => { params.cameraTransitionDuration = v })
-guiSlider(cameraF, 'Blur', params.blur, 0, 1, 0.01, (v) => { params.blur = v; blurDirectionU.value = v * 10 })
-
-// ── Lights folder
-const lightsF = guiFolder('Lights')
-guiColor(lightsF, 'Sun Color', params.sunColor, (v) => { params.sunColor = v; sunLight.color.set(v) })
-guiSlider(lightsF, 'Sun Intensity', params.sunIntensity, 0, 10, 0.1, (v) => { params.sunIntensity = v; sunLight.intensity = v })
-guiSlider(lightsF, 'Sun X', params.sunX, -50, 50, 0.5, (v) => { params.sunX = v; sunLight.position.x = v; lightDirU.value.copy(sunLight.position).normalize().negate() })
-guiSlider(lightsF, 'Sun Y', params.sunY, 0, 100, 0.5, (v) => { params.sunY = v; sunLight.position.y = v; lightDirU.value.copy(sunLight.position).normalize().negate() })
-guiSlider(lightsF, 'Sun Z', params.sunZ, -50, 50, 0.5, (v) => { params.sunZ = v; sunLight.position.z = v; lightDirU.value.copy(sunLight.position).normalize().negate() })
-guiColor(lightsF, 'Ambient Color', params.ambientColor, (v) => { params.ambientColor = v; ambientLight.color.set(v) })
-guiSlider(lightsF, 'Ambient Intensity', params.ambientIntensity, 0, 3, 0.05, (v) => { params.ambientIntensity = v; ambientLight.intensity = v })
-guiColor(lightsF, 'Sky Top Color', params.skyTopColor, (v) => { params.skyTopColor = v; skyTopColorU.value.set(v) })
-guiColor(lightsF, 'Sky Bottom Color', params.skyBottomColor, (v) => { params.skyBottomColor = v; skyBottomColorU.value.set(v) })
-guiSlider(lightsF, 'Exposure', params.exposure, 0.1, 3, 0.05, (v) => { params.exposure = v; renderer.toneMappingExposure = v })
-
-// ── Shadows folder
-const shadowF = guiFolder('Shadows')
-guiCheckbox(shadowF, 'Enabled', params.shadowEnabled, (v) => { params.shadowEnabled = v; sunLight.castShadow = v })
-guiSlider(shadowF, 'Radius', params.shadowRadius, 0, 30, 0.5, (v) => { params.shadowRadius = v; sunLight.shadow.radius = v })
-guiSlider(shadowF, 'Blur Samples', params.shadowBlurSamples, 1, 64, 1, (v) => { params.shadowBlurSamples = v; sunLight.shadow.blurSamples = v })
-guiSlider(shadowF, 'Bias', params.shadowBias, -0.01, 0.01, 0.0001, (v) => { params.shadowBias = v; sunLight.shadow.bias = v })
-guiSlider(shadowF, 'Normal Bias', params.shadowNormalBias, 0, 0.1, 0.001, (v) => { params.shadowNormalBias = v; sunLight.shadow.normalBias = v })
-guiSelect(shadowF, 'Map Size', [1024, 2048], params.shadowMapSize, (v) => { const s = parseInt(v); params.shadowMapSize = s; sunLight.shadow.mapSize.width = s; sunLight.shadow.mapSize.height = s; sunLight.shadow.dispose(); sunLight.shadow.map = null })
-
-// ── SSGI folder
-const ssgiF = guiFolder('SSGI')
-
+// ─── Custom GUI (removed) ────────────────────────────────────────────────
+// GUI removed per request - smooth & clean UI
 function updateOutputPipeline() {
   const { giEnabled, aoEnabled } = giPass
   const { enabled: ssrEnabled } = ssrPass
   let node
-
   if (giEnabled && aoEnabled) {
     node = ssrEnabled ? traaGiAoSsr : traaGiAo
   } else if (giEnabled) {
@@ -960,7 +816,6 @@ function updateOutputPipeline() {
   } else {
     node = ssrEnabled ? traaSsrOnly : scenePassColor
   }
-
   if (params.blur > 0) {
     blurPass.textureNode = convertToTexture(node)
     renderPipeline.outputNode = blurPass
@@ -971,87 +826,22 @@ function updateOutputPipeline() {
 }
 updateOutputPipeline()
 
-guiCheckbox(ssgiF, 'GI Enabled', giPass.giEnabled, (v) => { giPass.giEnabled = v; updateOutputPipeline() })
-guiCheckbox(ssgiF, 'AO Enabled', giPass.aoEnabled, (v) => { giPass.aoEnabled = v; updateOutputPipeline() })
-guiSlider(ssgiF, 'Slice Count', giPass.sliceCount.value, 1, 4, 1, (v) => { giPass.sliceCount.value = v })
-guiSlider(ssgiF, 'Step Count', giPass.stepCount.value, 1, 32, 1, (v) => { giPass.stepCount.value = v })
-guiSlider(ssgiF, 'Radius', giPass.radius.value, 1, 25, 0.5, (v) => { giPass.radius.value = v })
-guiSlider(ssgiF, 'Exp Factor', giPass.expFactor.value, 1, 3, 0.1, (v) => { giPass.expFactor.value = v })
-guiSlider(ssgiF, 'Thickness', giPass.thickness.value, 0.01, 10, 0.01, (v) => { giPass.thickness.value = v })
-guiSlider(ssgiF, 'Backface Lighting', giPass.backfaceLighting.value, 0, 1, 0.01, (v) => { giPass.backfaceLighting.value = v })
-guiSlider(ssgiF, 'AO Intensity', giPass.aoIntensity.value, 0, 4, 0.1, (v) => { giPass.aoIntensity.value = v })
-guiSlider(ssgiF, 'GI Intensity', giPass.giIntensity.value, 0, 100, 0.5, (v) => { giPass.giIntensity.value = v })
-guiCheckbox(ssgiF, 'Linear Thickness', giPass.useLinearThickness.value, (v) => { giPass.useLinearThickness.value = v })
-guiCheckbox(ssgiF, 'Screen-Space Sampling', giPass.useScreenSpaceSampling.value, (v) => { giPass.useScreenSpaceSampling.value = v })
+// Hide stats permanently for clean look
+stats.dom.style.display = 'none'
+stats.dom.style.visibility = 'hidden'
+stats.dom.style.pointerEvents = 'none'
 
-// ── Water folder
-const waterF = guiFolder('Water')
-guiCheckbox(waterF, 'Enabled', waterPlane.mesh.visible, (v) => { waterPlane.mesh.visible = v })
-guiColor(waterF, 'Color', '#' + waterPlane.material.color.getHexString(), (v) => { waterPlane.material.color.set(v) })
-guiSlider(waterF, 'Roughness', waterPlane.material.roughness, 0, 1, 0.05, (v) => { waterPlane.material.roughness = v })
-guiSlider(waterF, 'Metalness', waterPlane.material.metalness, 0, 1, 0.05, (v) => { waterPlane.material.metalness = v })
-guiSlider(waterF, 'Fresnel Bias', params.fresnelBias, 0, 1, 0.01, (v) => { params.fresnelBias = v; waterPlane.uniforms.fresnelBias.value = v })
-guiSlider(waterF, 'Fresnel Power', params.fresnelPower, 0.1, 10, 0.1, (v) => { params.fresnelPower = v; waterPlane.uniforms.fresnelPower.value = v })
-guiSlider(waterF, 'Fresnel Scale', params.fresnelScale, 0, 3, 0.05, (v) => { params.fresnelScale = v; waterPlane.uniforms.fresnelScale.value = v })
-guiSlider(waterF, 'Viscosity', waterPlane.uniforms.viscosity.value, 0, 0.999, 0.001, (v) => { waterPlane.uniforms.viscosity.value = v })
-guiSlider(waterF, 'Damping', waterPlane.uniforms.damping.value, 0, 0.3, 0.005, (v) => { waterPlane.uniforms.damping.value = v })
-guiSlider(waterF, 'Wave Speed', waterPlane.uniforms.speed.value, 0.1, 1, 0.01, (v) => { waterPlane.uniforms.speed.value = v })
-guiSlider(waterF, 'Mouse Deep', waterPlane.uniforms.mouseDeep.value, 0.01, 1, 0.01, (v) => { waterPlane.uniforms.mouseDeep.value = v })
-guiSlider(waterF, 'Mouse Size', waterPlane.uniforms.mouseSize.value, 0.05, 1, 0.01, (v) => { waterPlane.uniforms.mouseSize.value = v })
-guiSlider(waterF, 'Collider Strength', waterPlane.uniforms.colliderStrength.value, 0, 1, 0.001, (v) => { waterPlane.uniforms.colliderStrength.value = v })
-guiSlider(waterF, 'Collider Z Offset', _sphereRefOffsetZ, -20, 5, 0.1, (v) => { _sphereRefOffsetZ = v })
-guiSlider(waterF, 'Collider Size', colliderRadius, 0.1, 5, 0.05, (v) => { colliderRadius = v; colliderSphere.scale.setScalar(v / 1.2) })
-guiSlider(waterF, 'Noise Amplitude', waterPlane.uniforms.noiseAmplitude.value, 0, 2, 0.001, (v) => { waterPlane.uniforms.noiseAmplitude.value = v })
-guiSlider(waterF, 'Noise Frequency', waterPlane.uniforms.noiseFrequency.value, 0.1, 20, 0.1, (v) => { waterPlane.uniforms.noiseFrequency.value = v })
-guiSlider(waterF, 'Noise Speed', waterPlane.uniforms.noiseSpeed.value, 0, 3, 0.05, (v) => { waterPlane.uniforms.noiseSpeed.value = v })
-guiSlider(waterF, 'Caustic Strength', params.causticStrength, 0, 30, 0.1, (v) => { params.causticStrength = v; causticStrengthU.value = v })
-guiColor(waterF, 'Caustic Color', params.causticColor, (v) => { params.causticColor = v; causticColorU.value.set(v) })
-guiSlider(waterF, 'Caustic Shadow', params.causticShadowInfluence, 0, 1, 0.01, (v) => { params.causticShadowInfluence = v; waterCaustics.uniforms.shadowInfluence.value = v })
-guiSlider(waterF, 'Caustic Height Mult', params.causticHeightMultiplier, 0.1, 20, 0.1, (v) => { params.causticHeightMultiplier = v; causticHeightMultiplierU.value = v })
-
-// ── SSR folder
-const ssrF = guiFolder('SSR')
-guiCheckbox(ssrF, 'Enabled', ssrPass.enabled, (v) => { ssrPass.enabled = v; updateOutputPipeline() })
-guiSlider(ssrF, 'Quality', ssrPass.quality.value, 0, 1, 0.1, (v) => { ssrPass.quality.value = v })
-guiSlider(ssrF, 'Blur Quality', ssrPass.blurQuality.value, 1, 3, 1, (v) => { ssrPass.blurQuality.value = v })
-guiSlider(ssrF, 'Max Distance', ssrPass.maxDistance.value, 0.1, 100, 0.1, (v) => { ssrPass.maxDistance.value = v })
-guiSlider(ssrF, 'Opacity', ssrPass.opacity.value, 0, 1, 0.05, (v) => { ssrPass.opacity.value = v })
-guiSlider(ssrF, 'Thickness', ssrPass.thickness.value, 0.001, 0.1, 0.001, (v) => { ssrPass.thickness.value = v })
-
-// ── Fog folder
-const fogF = guiFolder('Fog')
-guiCheckbox(fogF, 'Enabled', params.fogEnabled, (v) => { params.fogEnabled = v; scene.fog = v ? new THREE.FogExp2(params.fogColor, params.fogDensity) : null })
-guiColor(fogF, 'Color', params.fogColor, (v) => { params.fogColor = v; if (scene.fog) { scene.fog.color.set(v); renderer.setClearColor(v) } })
-guiSlider(fogF, 'Density', params.fogDensity, 0, 0.05, 0.001, (v) => { params.fogDensity = v; if (scene.fog) scene.fog.density = v })
-
-// ── Buildings folder
-const buildingsF = guiFolder('Buildings')
-guiColor(buildingsF, 'Color', params.buildingColor, (v) => { params.buildingColor = v; buildingColorU.value.set(v) })
-guiColor(buildingsF, 'Sphere', params.sphereColor, (v) => { params.sphereColor = v; sphereColorU.value.set(v) })
-guiColor(buildingsF, 'Ground', params.groundColor, (v) => { params.groundColor = v; groundColorU.value.set(v) })
-guiColor(buildingsF, 'Floor', params.floorColor, (v) => { params.floorColor = v; floorColorU.value.set(v) })
-guiColor(buildingsF, 'Floor Grout', params.floorGroutColor, (v) => { params.floorGroutColor = v; floorGroutColorU.value.set(v) })
-guiSlider(buildingsF, 'Floor Tile Size', params.floorTileSize, 0.1, 2, 0.01, (v) => { params.floorTileSize = v; floorTileSizeU.value = v })
-guiColor(buildingsF, 'Sphere Emissive', params.bigSphereEmissiveColor, (v) => { params.bigSphereEmissiveColor = v; bigSphereEmissiveColorU.value.set(v) })
-guiSlider(buildingsF, 'Sphere Emissive Int.', params.bigSphereEmissiveIntensity, 0, 10, 0.01, (v) => { params.bigSphereEmissiveIntensity = v; bigSphereEmissiveIntensityU.value = v })
-
+let debugToggleInput = { checked: false }
 function setDebug(enabled) {
   params.debug = enabled
   controls.enabled = enabled
-  stats.dom.style.display = enabled ? '' : 'none'
+  stats.dom.style.display = 'none'
   transformHelper.visible = enabled
   colliderSphere.visible = enabled
   shadowHelper.visible = enabled
   transformControls.enabled = enabled
   debugOverlay.style.display = enabled ? 'block' : 'none'
-  silenceH2.style.opacity = enabled ? '1' : '0'
   debugToggleInput.checked = enabled
-}
-
-let debugToggleInput
-{
-  const debugF = guiFolder('Debug')
-  debugToggleInput = guiCheckbox(debugF, 'Debug (P)', params.debug, setDebug)
 }
 
 window.addEventListener('keydown', (e) => {
@@ -1072,106 +862,88 @@ const _unprojVec2 = new THREE.Vector3()
 // Reference point that follows the camera Z so the text depth is always valid
 const _sphereRefPoint = new THREE.Vector3(colliderSphere.position.x, 0, colliderSphere.position.z)
 
-// ─── Scroll-driven camera Z animation ────────────────────────────────────────
+// ─── Scroll-driven camera Z animation (flawless, scroll-linked) ───────────────────
 const cameraStartZ = camera.position.z
 const cameraChapter1Z = 1
 const cameraMidZ = -14
 const cameraEndZ = -31
 const controlsStartZ = controls.target.z
 
-// Ease-in-out transition state
-let transitionFromCamZ = cameraStartZ
-let transitionFromCtrlZ = controlsStartZ
-let transitionToCamZ = cameraStartZ
-let transitionToCtrlZ = controlsStartZ
-let transitionStartTime = 0
-let transitionProgress = 1 // start fully settled
-
-function ease(t) {
-  return (easings[params.cameraEase] || easings.cubicInOut)(t)
-}
-let transitionDuration = params.cameraTransitionDuration
-
 const allSections = document.querySelectorAll('.sections .section')
-const section1El = allSections[0] // Chapter I "Still waters run deep"
-const section3El = allSections[1] // Chapter II "Refracted through stillness"
-const section4El = allSections[2] // Chapter III "The weight of light"
+const section1El = allSections[0] // Chapter I
+const section3El = allSections[1] // Chapter II
+const section4El = allSections[2] // Chapter III
 const finaleEl = document.querySelector('.finale')
 
-// Cache document-space positions (independent of scroll), recompute on resize
 let section1Top = 0
 let section3Top = 0
 let section4Top = 0
 let finaleTop = 0
 function updateSectionOffsets() {
-  const scrollY = window.scrollY
-  section1Top = section1El.getBoundingClientRect().top + scrollY
-  section3Top = section3El.getBoundingClientRect().top + scrollY
-  section4Top = section4El.getBoundingClientRect().top + scrollY
-  finaleTop = finaleEl.getBoundingClientRect().top + scrollY
+  const sY = window.scrollY
+  section1Top = section1El.getBoundingClientRect().top + sY
+  section3Top = section3El.getBoundingClientRect().top + sY
+  section4Top = section4El.getBoundingClientRect().top + sY
+  finaleTop = finaleEl.getBoundingClientRect().top + sY
 }
 updateSectionOffsets()
 
-function updateCameraProgress() {
-  const viewportCenter = window.scrollY + innerHeight / 2
+let targetCamZ = cameraStartZ
+let targetCtrlZ = controlsStartZ
+let targetBlur = 0
 
-  let newTargetCamZ
-  if (viewportCenter >= section4Top) {
-    newTargetCamZ = cameraEndZ
-  } else if (viewportCenter >= section3Top) {
-    newTargetCamZ = cameraMidZ
-  } else if (viewportCenter >= section1Top) {
-    newTargetCamZ = cameraChapter1Z
+function ease(t) {
+  return (easings[params.cameraEase] || easings.cubicInOut)(t)
+}
+function clamp01(v) { return Math.max(0, Math.min(1, v)) }
+function lerp(a, b, t) { return a + (b - a) * t }
+
+function computeTargets() {
+  const viewportCenter = window.scrollY + innerHeight / 2
+  let z
+  if (viewportCenter < section1Top) {
+    const t = clamp01(viewportCenter / Math.max(1, section1Top))
+    z = lerp(cameraStartZ, cameraChapter1Z, ease(t))
+  } else if (viewportCenter < section3Top) {
+    const t = clamp01((viewportCenter - section1Top) / Math.max(1, section3Top - section1Top))
+    z = lerp(cameraChapter1Z, cameraMidZ, ease(t))
+  } else if (viewportCenter < section4Top) {
+    const t = clamp01((viewportCenter - section3Top) / Math.max(1, section4Top - section3Top))
+    z = lerp(cameraMidZ, cameraEndZ, ease(t))
   } else {
-    newTargetCamZ = cameraStartZ
+    z = cameraEndZ
   }
-
-  if (newTargetCamZ !== transitionToCamZ) {
-    transitionFromCamZ = camera.position.z
-    transitionFromCtrlZ = controls.target.z
-    transitionToCamZ = newTargetCamZ
-    transitionToCtrlZ = controlsStartZ + (newTargetCamZ - cameraStartZ)
-    transitionStartTime = performance.now() / 1000
-    transitionProgress = 0
-    transitionDuration = params.cameraTransitionDuration
-  }
-}
-// Blur transition state
-let blurFrom = 0
-let blurTo = 0
-let blurTransitionStart = 0
-let blurTransitionProgress = 1
-
-function updateBlurTarget(targetBlur) {
-  if (targetBlur === blurTo) return
-  blurFrom = params.blur
-  blurTo = targetBlur
-  blurTransitionStart = performance.now() / 1000
-  blurTransitionProgress = 0
-  // When blur transitions to/from zero, rebuild the pipeline
-  if ((blurFrom === 0) !== (targetBlur === 0)) {
-    // Will be handled in animate loop when blur value changes
-  }
-}
-
-function updateCameraAndBlurProgress() {
-  updateCameraProgress()
-
-  const viewportCenter = window.scrollY + innerHeight / 2
-  updateBlurTarget(viewportCenter >= finaleTop ? 0.1 : 0)
+  targetCamZ = z
+  targetCtrlZ = controlsStartZ + (z - cameraStartZ)
+  let blurT = 0
+  const blurStart = finaleTop - innerHeight * 0.5
+  if (viewportCenter >= finaleTop) blurT = 1
+  else if (viewportCenter > blurStart) blurT = clamp01((viewportCenter - blurStart) / (innerHeight * 0.5))
+  const blurTarget = blurT * 0.12
+  targetBlur = blurTarget
 }
 
 let scrollTicking = false
 function onScroll() {
   if (!scrollTicking) {
     requestAnimationFrame(() => {
-      updateCameraAndBlurProgress()
+      computeTargets()
       scrollTicking = false
     })
     scrollTicking = true
   }
 }
 window.addEventListener('scroll', onScroll, { passive: true })
+computeTargets()
+
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setPixelRatio(pixelRatio)
+  renderer.setSize(innerWidth, innerHeight)
+  updateSectionOffsets()
+  computeTargets()
+})
 
 // ─── Mouse interaction ──────────────────────────────────────────────────────
 const mouseNDC = new THREE.Vector2(-Infinity, -Infinity)
@@ -1269,29 +1041,27 @@ async function animate() {
     }
   }
 
-  // Scroll-driven camera Z with ease-in-out
-  if (!params.debug && transitionProgress < 1) {
-    transitionProgress = Math.min((performance.now() / 1000 - transitionStartTime) / transitionDuration, 1)
-    const eased = ease(transitionProgress)
-    camera.position.z = transitionFromCamZ + (transitionToCamZ - transitionFromCamZ) * eased
-    controls.target.z = transitionFromCtrlZ + (transitionToCtrlZ - transitionFromCtrlZ) * eased
+    // Flawless scroll-driven camera + blur lerp (smooth, frame-rate independent)
+  if (!params.debug) {
+    const camLerp = 0.075
+    camera.position.z += (targetCamZ - camera.position.z) * camLerp
+    controls.target.z += (targetCtrlZ - controls.target.z) * camLerp
+    if (Math.abs(targetCamZ - camera.position.z) < 0.001) camera.position.z = targetCamZ
+    if (Math.abs(targetCtrlZ - controls.target.z) < 0.001) controls.target.z = targetCtrlZ
   }
-
-  // Blur transition
-  if (blurTransitionProgress < 1) {
+  // Blur smooth lerp - rebuild pipeline only when crossing 0 threshold
+  {
     const prevBlur = params.blur
-    blurTransitionProgress = Math.min((performance.now() / 1000 - blurTransitionStart) / 0.3, 1)
-    const eased = easings.quadOut(blurTransitionProgress)
-    const blurValue = blurFrom + (blurTo - blurFrom) * eased
-    params.blur = blurValue
-    blurDirectionU.value = blurValue * 10
-    // Rebuild pipeline when crossing the zero threshold
-    if ((prevBlur === 0) !== (blurValue === 0)) {
+    const blurLerp = 0.08
+    params.blur += (targetBlur - params.blur) * blurLerp
+    if (Math.abs(targetBlur - params.blur) < 0.0005) params.blur = targetBlur
+    blurDirectionU.value = params.blur * 10
+    if ((prevBlur === 0) !== (params.blur === 0)) {
       updateOutputPipeline()
     }
   }
 
-  if (waterPlane.mesh.visible) {
+if (waterPlane.mesh.visible) {
     waterPlane.update(mouseNDC, camera, colliderSphere.position, colliderRadius)
   }
 
