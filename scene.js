@@ -96,7 +96,7 @@ const scene = new THREE.Scene()
 scene.fog = params.fogEnabled ? new THREE.FogExp2(params.fogColor, params.fogDensity) : null
 
 const camera = new THREE.PerspectiveCamera(params.fov, innerWidth / innerHeight, 0.1, 500)
-camera.position.set(0, 3, 9)
+camera.position.set(0, 3, 12)
 camera.lookAt(0, 1.5, -10)
 window.camera = camera
 
