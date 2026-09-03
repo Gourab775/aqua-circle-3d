@@ -43,7 +43,7 @@ import * as easings from 'eases-jsnext'
 // ─── Params ─────────────────────────────────────────────────────────────────
 const params = {
   // Camera
-  fov: 55,
+  fov: 60,
   cameraEase: 'quadInOut',
   cameraTransitionDuration: 2,
   blur: 0,

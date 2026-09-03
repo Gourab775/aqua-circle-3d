@@ -1116,4 +1116,5 @@
     html { -webkit-overflow-scrolling: touch; scroll-padding-top: 0; }
     .splash, .sections, .section, .finale { transform: translateZ(0); backface-visibility: hidden; }
     canvas { will-change: transform; transform: translateZ(0); image-rendering: optimizeQuality; }
-
+    /* Fix duplicate Still waters - hide black HTML, keep only 3D white */
+    .sections .section:first-child h2 { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
